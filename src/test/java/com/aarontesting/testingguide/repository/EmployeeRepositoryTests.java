@@ -2,6 +2,7 @@ package com.aarontesting.testingguide.repository;
 
 import com.aarontesting.testingguide.model.Employee;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,22 @@ public class EmployeeRepositoryTests {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    private Employee employee;
+
+    @BeforeEach
+    public void setup() {
+        employee = Employee.builder()
+                .firstName("Andre")
+                .lastName("pierre")
+                .email("gignac@gmail.com")
+                .build();
+    }
+
     // JUnit test for save employee operation
     @DisplayName("JUnit test for save employee operation")
     @Test
     public void givenEmployeeObject_whenSave_thenReturnSavedEmployee() {
-
         // given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("andre")
-                .lastName("pierre")
-                .email("gignac@gmail.com")
-                .build();
 
         // when - action or behaviour that we are goint to test
         Employee savedEmployee = employeeRepository.save(employee);
@@ -38,14 +44,10 @@ public class EmployeeRepositoryTests {
     }
 
     // JUnit test for
+    @DisplayName("JUnit test to get all employees by findAll method")
     @Test
     public void givenEmployeesList_whenFindAll_thenSaveEmployeesList() {
         // given -  precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("andre")
-                .lastName("pierre")
-                .email("gignac@gmail.com")
-                .build();
 
         Employee employee1 = Employee.builder()
                 .firstName("nahuel")
@@ -70,11 +72,6 @@ public class EmployeeRepositoryTests {
         @Test
         public void givenEmployeeId_whenFindById_thenReturnEmployeeObject() {
             // given -  precondition or setup
-            Employee employee = Employee.builder()
-                    .firstName("andre")
-                    .lastName("pierre")
-                    .email("gignac@gmail.com")
-                    .build();
 
             employeeRepository.save(employee);
 
@@ -91,11 +88,6 @@ public class EmployeeRepositoryTests {
         @Test
         public void givenEmployeeEmail_whenFindByEmail_thenReturnEmployeeObject() {
             // given -  precondition or setup
-            Employee employee = Employee.builder()
-                    .firstName("Andre")
-                    .lastName("pierre")
-                    .email("gignac@email.com")
-                    .build();
             employeeRepository.save(employee);
             // when - action or the behaviour that we are going to test
             Optional<Employee> employeeDb = employeeRepository.findByEmail(employee.getEmail());
@@ -104,15 +96,11 @@ public class EmployeeRepositoryTests {
             assertThat(employeeDb).isNotNull();
         }
 
-        // JUnit test for
+        // JUnit test for update employee with email and last name
+        @DisplayName("JUnit test for update employee with email and last name")
         @Test
-        public void givenEmployeeObject_whenUpdatEmployee_thenVerifyEmployeeWasUpdated() {
+        public void givenEmployeeObject_whenUpdateEmployee_thenVerifyEmployeeWasUpdated() {
             // given -  precondition or setup
-            Employee employee = Employee.builder()
-                    .firstName("Andre")
-                    .lastName("pierre")
-                    .email("gignac@email.com")
-                    .build();
             employeeRepository.save(employee);
 
             // when - action or the behaviour that we are going to test
@@ -131,11 +119,6 @@ public class EmployeeRepositoryTests {
         @Test
         public void givenEmployeeObject_whenDeleteByIdAndFindById_thenReturnEmptyResult() {
             // given -  precondition or setup
-            Employee employee = Employee.builder()
-                    .firstName("Andre")
-                    .lastName("pierre")
-                    .email("gignac@email.com")
-                    .build();
             employeeRepository.save(employee);
 
             // when - action or the behaviour that we are going to test
@@ -151,11 +134,6 @@ public class EmployeeRepositoryTests {
         @Test
         public void givenEmployeeObject_whenFindByJPQL_thenReturnEmployeeObject() {
             // given -  precondition or setup
-            Employee employee = Employee.builder()
-                    .firstName("Andre")
-                    .lastName("pierre")
-                    .email("gignac@email.com")
-                    .build();
             employeeRepository.save(employee);
 
             // when - action or the behaviour that we are going to test
@@ -172,11 +150,6 @@ public class EmployeeRepositoryTests {
     @Test
     public void givenEmployeeObject_whenFindByJPQLNamedParams_thenReturnEmployeeObject() {
         // given -  precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("Andre")
-                .lastName("pierre")
-                .email("gignac@email.com")
-                .build();
         employeeRepository.save(employee);
 
         // when - action or the behaviour that we are going to test
@@ -187,6 +160,38 @@ public class EmployeeRepositoryTests {
         assertThat(employeeDb.getFirstName()).isEqualTo("Andre");
 
     }
+
+    @DisplayName("JUnit test for custom query using Native SQL with index parameters")
+    @Test
+    public void givenEmployeeObject_whenFindByNativeSQL_thenReturnEmployeeObject() {
+        // given -  precondition or setup
+        employeeRepository.save(employee);
+
+        // when - action or the behaviour that we are going to test
+        Employee employeeDb = employeeRepository.findByNativeSQL("Andre", "pierre");
+
+        // then - verify the output
+        assertThat(employeeDb).isNotNull();
+        assertThat(employeeDb.getFirstName()).isEqualTo("Andre");
+
+    }
+
+    @DisplayName("JUnit test for custom query using Native SQL with named parameters")
+    @Test
+    public void givenEmployeeObject_whenFindByNativeSQLNamedParams_thenReturnEmployeeObject() {
+        // given -  precondition or setup
+        employeeRepository.save(employee);
+
+        // when - action or the behaviour that we are going to test
+        Employee employeeDb = employeeRepository.findByNativeSQLNamedParams("Andre", "pierre");
+
+        // then - verify the output
+        assertThat(employeeDb).isNotNull();
+        assertThat(employeeDb.getFirstName()).isEqualTo("Andre");
+
+    }
+
+
 }
 
 
